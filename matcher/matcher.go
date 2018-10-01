@@ -4,16 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/deckarep/golang-set"
 )
 
 // Matcher struct
 type Matcher struct {
-	whitelist []string
+	whitelist mapset.Set
 }
 
 // New initalize Matcher
 func New(filepath string) *Matcher {
 	m := new(Matcher)
+	m.whitelist = mapset.NewSet()
 	m.initWhitelist(filepath)
 	return m
 }
@@ -30,11 +33,11 @@ func (m *Matcher) initWhitelist(filepath string) {
 	scanner := bufio.NewScanner(fp)
 
 	for scanner.Scan() {
-		m.whitelist = append(m.whitelist, scanner.Text())
+		if err = scanner.Err(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		m.whitelist.Add(scanner.Text())
 	}
-
-	if err = scanner.Err(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	fmt.Println(m.whitelist)
 }
