@@ -1,0 +1,2 @@
+# sqd
+suspicious query detection
