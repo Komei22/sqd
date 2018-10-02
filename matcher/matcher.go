@@ -13,7 +13,7 @@ type Matcher struct {
 	whitelist mapset.Set
 }
 
-// New initalize Matcher
+// New initialize Matcher
 func New(filepath string) *Matcher {
 	m := new(Matcher)
 	m.whitelist = mapset.NewSet()
@@ -21,7 +21,6 @@ func New(filepath string) *Matcher {
 	return m
 }
 
-// InitWhitelist initalize whitelist
 func (m *Matcher) initWhitelist(filepath string) {
 	fp, err := os.Open(filepath)
 	if err != nil {
@@ -39,5 +38,4 @@ func (m *Matcher) initWhitelist(filepath string) {
 		}
 		m.whitelist.Add(scanner.Text())
 	}
-	fmt.Println(m.whitelist)
 }
