@@ -9,18 +9,18 @@ import (
 
 // Matcher struct
 type Matcher struct {
-	whitelist mapset.Set
+	list mapset.Set
 }
 
 // New initialize Matcher
 func New(filepath string) (*Matcher, error) {
 	m := new(Matcher)
-	m.whitelist = mapset.NewSet()
-	err := m.initWhitelist(filepath)
+	m.list = mapset.NewSet()
+	err := m.readList(filepath)
 	return m, err
 }
 
-func (m *Matcher) initWhitelist(filepath string) error {
+func (m *Matcher) readList(filepath string) error {
 	fp, err := os.Open(filepath)
 	if err != nil {
 		return err
@@ -33,14 +33,14 @@ func (m *Matcher) initWhitelist(filepath string) error {
 		if err = scanner.Err(); err != nil {
 			return err
 		}
-		m.whitelist.Add(scanner.Text())
+		m.list.Add(scanner.Text())
 	}
 	return nil
 }
 
-// IsLegitimate returns true if the query is included in the whitelist
+// IsLegitimate returns true if the query is included in the list
 func (m *Matcher) IsLegitimate(query string) bool {
 	set := mapset.NewSet()
 	set.Add(query)
-	return set.IsSubset(m.whitelist)
+	return set.IsSubset(m.list)
 }
