@@ -2,7 +2,6 @@ package matcher
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 
 	"github.com/deckarep/golang-set"
@@ -14,18 +13,17 @@ type Matcher struct {
 }
 
 // New initialize Matcher
-func New(filepath string) *Matcher {
+func New(filepath string) (*Matcher, error) {
 	m := new(Matcher)
 	m.whitelist = mapset.NewSet()
-	m.initWhitelist(filepath)
-	return m
+	err := m.initWhitelist(filepath)
+	return m, err
 }
 
-func (m *Matcher) initWhitelist(filepath string) {
+func (m *Matcher) initWhitelist(filepath string) error {
 	fp, err := os.Open(filepath)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
 	defer fp.Close()
 
@@ -33,11 +31,11 @@ func (m *Matcher) initWhitelist(filepath string) {
 
 	for scanner.Scan() {
 		if err = scanner.Err(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return err
 		}
 		m.whitelist.Add(scanner.Text())
 	}
+	return nil
 }
 
 // IsLegitimate returns true if the query is included in the whitelist
