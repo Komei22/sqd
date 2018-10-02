@@ -40,8 +40,8 @@ func (m *Matcher) initWhitelist(filepath string) {
 	}
 }
 
-// Match returns true if the query is included in the whitelist
-func (m *Matcher) Match(query string) bool {
+// IsLegitimate returns true if the query is included in the whitelist
+func (m *Matcher) IsLegitimate(query string) bool {
 	set := mapset.NewSet()
 	set.Add(query)
 	return set.IsSubset(m.whitelist)
