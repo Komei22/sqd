@@ -39,3 +39,10 @@ func (m *Matcher) initWhitelist(filepath string) {
 		m.whitelist.Add(scanner.Text())
 	}
 }
+
+// Match returns true if the query is included in the whitelist
+func (m *Matcher) Match(query string) bool {
+	set := mapset.NewSet()
+	set.Add(query)
+	return set.IsSubset(m.whitelist)
+}
