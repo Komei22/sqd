@@ -44,7 +44,5 @@ func (m *Matcher) saveList(r io.Reader) error {
 
 // IsMatchList returns true if the query is included in the list
 func (m *Matcher) IsMatchList(query string) bool {
-	set := mapset.NewSet()
-	set.Add(query)
-	return set.IsSubset(m.list)
+	return m.list.Contains(query)
 }
