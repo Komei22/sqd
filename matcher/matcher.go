@@ -2,6 +2,7 @@ package matcher
 
 import (
 	"bufio"
+	"io"
 	"os"
 
 	"github.com/deckarep/golang-set"
@@ -16,21 +17,24 @@ type Matcher struct {
 func New(filepath string) (*Matcher, error) {
 	m := new(Matcher)
 	m.list = mapset.NewSet()
-	err := m.readList(filepath)
+	err := m.loadList(filepath)
 	return m, err
 }
 
-func (m *Matcher) readList(filepath string) error {
-	fp, err := os.Open(filepath)
+func (m *Matcher) loadList(filepath string) error {
+	reader, err := os.Open(filepath)
 	if err != nil {
 		return err
 	}
-	defer fp.Close()
+	defer reader.Close()
 
-	scanner := bufio.NewScanner(fp)
+	return m.saveList(reader)
+}
 
+func (m *Matcher) saveList(r io.Reader) error {
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		if err = scanner.Err(); err != nil {
+		if err := scanner.Err(); err != nil {
 			return err
 		}
 		m.list.Add(scanner.Text())
