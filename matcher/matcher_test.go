@@ -1,16 +1,25 @@
 package matcher
 
 import (
+	"github.com/deckarep/golang-set"
+	"strings"
 	"testing"
 )
 
 func TestDistinguishLegitimateQuery(t *testing.T) {
+	queryList := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?
+DELETE FROM articles WHERE articles.id = ?
+INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)`
+
 	querys := []string{
-		"SELECT `articles`.* FROM `articles` ORDER BY `articles`.`id` DESC LIMIT ?",
-		"DELETE FROM `articles` WHERE `articles`.`id` = ?",
-		"INSERT INTO `articles` (`title`, `content`, `created_at`, `updated_at`) VALUES (?, ?, ?, ?)",
+		"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?",
+		"DELETE FROM articles WHERE articles.id = ?",
+		"INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
 	}
-	m := New("whitelist_example")
+
+	m := new(Matcher)
+	m.list = mapset.NewSet()
+	m.saveList(strings.NewReader(queryList))
 
 	for _, query := range querys {
 		if !m.IsLegitimate(query) {
@@ -20,8 +29,15 @@ func TestDistinguishLegitimateQuery(t *testing.T) {
 }
 
 func TestDistinguishIllegalQuery(t *testing.T) {
+	queryList := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?
+DELETE FROM articles WHERE articles.id = ?
+INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	query := "DROP DATABASE production"
-	m := New("whitelist_example")
+
+	m := new(Matcher)
+	m.list = mapset.NewSet()
+	m.saveList(strings.NewReader(queryList))
+
 	if m.IsLegitimate(query) {
 		t.Error("Failed distinguish illegal query.")
 	}
