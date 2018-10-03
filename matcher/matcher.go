@@ -42,8 +42,8 @@ func (m *Matcher) saveList(r io.Reader) error {
 	return nil
 }
 
-// IsLegitimate returns true if the query is included in the list
-func (m *Matcher) IsLegitimate(query string) bool {
+// IsMatchList returns true if the query is included in the list
+func (m *Matcher) IsMatchList(query string) bool {
 	set := mapset.NewSet()
 	set.Add(query)
 	return set.IsSubset(m.list)
