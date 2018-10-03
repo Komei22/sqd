@@ -13,10 +13,15 @@ type Matcher struct {
 	list mapset.Set
 }
 
+func newMatcher() *Matcher {
+	m := &Matcher{}
+	m.list = mapset.NewSet()
+	return m
+}
+
 // New initialize Matcher
 func New(filepath string) (*Matcher, error) {
-	m := new(Matcher)
-	m.list = mapset.NewSet()
+	m := newMatcher()
 	err := m.loadList(filepath)
 	return m, err
 }
