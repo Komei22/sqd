@@ -22,7 +22,7 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	m.saveList(strings.NewReader(queryList))
 
 	for _, query := range querys {
-		if !m.IsLegitimate(query) {
+		if !m.IsMatchList(query) {
 			t.Error("Failed distinguish legitimate query.")
 		}
 	}
@@ -38,7 +38,7 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	m.list = mapset.NewSet()
 	m.saveList(strings.NewReader(queryList))
 
-	if m.IsLegitimate(query) {
+	if m.IsMatchList(query) {
 		t.Error("Failed distinguish illegal query.")
 	}
 }
