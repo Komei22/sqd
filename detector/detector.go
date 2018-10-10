@@ -3,6 +3,7 @@ package detector
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Komei22/sqd/matcher"
@@ -23,20 +24,23 @@ func New(filepath string, mode string) (*Detector, error) {
 }
 
 func (d *Detector) readQuerys(filepath string) error {
-	reader, err := os.Open(filepath)
+	r, err := os.Open(filepath)
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
+	defer r.Close()
 
-	scanner := bufio.NewScanner(reader)
+	return d.saveQuerys(r)
+}
+
+func (d *Detector) saveQuerys(r io.Reader) error {
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
 			return err
 		}
 		d.querys = append(d.querys, scanner.Text())
 	}
-
 	return nil
 }
 
