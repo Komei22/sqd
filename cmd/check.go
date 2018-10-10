@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	querylogFilepath  string
-	whitelistFilepath string
-	blacklistFilepath string
+	querylogFilepath string
+	listFilepath     string
+	detectionMode    string
 )
 
 // checkCmd represents the check command
@@ -21,32 +21,15 @@ var checkCmd = &cobra.Command{
 	Short: "`sqd check` investigate query log base on white/black list",
 	Long:  "`sqd check` investigate query log base on white/black list",
 	Run: func(cmd *cobra.Command, args []string) {
-
-		m := &matcher.Matcher{}
-		var err error
-		var detectionMode detector.DetectionMode
-		if whitelistFilepath != "" {
-			m, err = matcher.New(whitelistFilepath)
-			if err != nil {
-				// logger.Warn("Can't read list file", zap.Error(err))
-				fmt.Print(err)
-				os.Exit(1)
-			}
-			detectionMode = detector.Whitelist
-		} else {
-			m, err = matcher.New(blacklistFilepath)
-			if err != nil {
-				// logger.Warn("Can't read list file", zap.Error(err))
-				fmt.Print(err)
-				os.Exit(1)
-			}
-			detectionMode = detector.Blacklist
+		m, err := matcher.New(listFilepath)
+		if err != nil {
+			fmt.Printf("Can't read list file. (%s)", err)
+			os.Exit(1)
 		}
 
 		d, err := detector.New(querylogFilepath, detectionMode)
 		if err != nil {
-			// logger.Warn("Can't read query log file", zap.Error(err))
-			fmt.Print(err)
+			fmt.Printf("Can't read query log file. (%s)", err)
 			os.Exit(1)
 		}
 
@@ -56,8 +39,8 @@ var checkCmd = &cobra.Command{
 
 func init() {
 	checkCmd.Flags().StringVarP(&querylogFilepath, "queryfile", "q", "", "query log file path")
-	checkCmd.Flags().StringVarP(&whitelistFilepath, "whitelist", "w", "", "whitelist file path")
-	checkCmd.Flags().StringVarP(&blacklistFilepath, "blacklist", "b", "", "blacklist file path")
+	checkCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
+	checkCmd.Flags().StringVarP(&detectionMode, "mode", "m", "whitelist", "detection mode (whitelist or blacklist)")
 
 	rootCmd.AddCommand(checkCmd)
 }

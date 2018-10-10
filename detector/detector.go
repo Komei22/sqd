@@ -9,23 +9,23 @@ import (
 )
 
 // DetectionMode is setted whitelist or blacklist mode
-type DetectionMode int
+// type DetectionMode int
 
-const (
-	// Whitelist mode detection
-	Whitelist = iota
-	// Blacklist mode detection
-	Blacklist
-)
+// const (
+// 	// Whitelist mode detection
+// 	Whitelist = iota
+// 	// Blacklist mode detection
+// 	Blacklist
+// )
 
 // Detector struct
 type Detector struct {
 	querys []string
-	mode   DetectionMode
+	mode   string
 }
 
 // New detector
-func New(filepath string, mode DetectionMode) (*Detector, error) {
+func New(filepath string, mode string) (*Detector, error) {
 	d := &Detector{}
 	err := d.readQuerys(filepath)
 	d.mode = mode
@@ -63,7 +63,7 @@ func (d *Detector) DumpSuspiciousQuerys(m *matcher.Matcher) {
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
-	if d.mode == Whitelist {
+	if d.mode == "whitelist" {
 		if !m.IsMatchList(query) {
 			return true
 		}
