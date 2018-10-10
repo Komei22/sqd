@@ -33,7 +33,11 @@ var checkCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		d.DumpSuspiciousQuerys(m)
+		err = d.DumpSuspiciousQuerys(m)
+		if err != nil {
+			fmt.Printf("Can't detection suspicious query. (%s)", err)
+			os.Exit(1)
+		}
 	},
 }
 

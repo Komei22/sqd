@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Komei22/sqd/matcher"
+	"github.com/Komei22/sql-mask"
 )
 
 // Detector struct
@@ -45,13 +46,18 @@ func (d *Detector) saveQuerys(r io.Reader) error {
 }
 
 // DumpSuspiciousQuerys find suspicious querys using matcher(whitelist or blacklist based)
-func (d *Detector) DumpSuspiciousQuerys(m *matcher.Matcher) {
+func (d *Detector) DumpSuspiciousQuerys(m *matcher.Matcher) error {
 	fmt.Printf("Suspicious querys:\n")
 	for _, query := range d.querys {
+		query, err := parser.Parse(query)
+		if err != nil {
+			return err
+		}
 		if d.isSuspiciousQuery(query, m) {
 			fmt.Printf("%s\n", query)
 		}
 	}
+	return nil
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
