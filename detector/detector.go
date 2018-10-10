@@ -45,19 +45,27 @@ func (d *Detector) saveQuerys(r io.Reader) error {
 	return nil
 }
 
-// DumpSuspiciousQuerys find suspicious querys using matcher(whitelist or blacklist based)
-func (d *Detector) DumpSuspiciousQuerys(m *matcher.Matcher) error {
-	fmt.Printf("Suspicious querys:\n")
+// Detect find suspicious querys using matcher(whitelist or blacklist based)
+func (d *Detector) Detect(m *matcher.Matcher) ([]string, error) {
+	var suspiciousQuerys []string
 	for _, query := range d.querys {
 		query, err := parser.Parse(query)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if d.isSuspiciousQuery(query, m) {
-			fmt.Printf("%s\n", query)
+			suspiciousQuerys = append(suspiciousQuerys, query)
 		}
 	}
-	return nil
+	return suspiciousQuerys, nil
+}
+
+// Dump output suspiciousQuerys
+func Dump(suspiciousQuerys []string) {
+	fmt.Print("Suspicious querys\n")
+	for _, query := range suspiciousQuerys {
+		fmt.Printf("%s\n", query)
+	}
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
