@@ -13,7 +13,8 @@ type Matcher struct {
 	list mapset.Set
 }
 
-func newMatcher() *Matcher {
+// NewMatcher ensure Matcher struct in memory
+func NewMatcher() *Matcher {
 	m := &Matcher{}
 	m.list = mapset.NewSet()
 	return m
@@ -21,7 +22,7 @@ func newMatcher() *Matcher {
 
 // New initialize Matcher
 func New(filepath string) (*Matcher, error) {
-	m := newMatcher()
+	m := NewMatcher()
 	err := m.loadList(filepath)
 	return m, err
 }
@@ -33,10 +34,10 @@ func (m *Matcher) loadList(filepath string) error {
 	}
 	defer reader.Close()
 
-	return m.saveList(reader)
+	return m.SaveList(reader)
 }
 
-func (m *Matcher) saveList(r io.Reader) error {
+func (m *Matcher) SaveList(r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {

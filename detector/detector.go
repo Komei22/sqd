@@ -16,11 +16,16 @@ type Detector struct {
 	mode   string
 }
 
+func newDetector(mode string) *Detector {
+	d := &Detector{}
+	d.mode = mode
+	return d
+}
+
 // New detector
 func New(filepath string, mode string) (*Detector, error) {
-	d := &Detector{}
+	d := newDetector(mode)
 	err := d.readQuerys(filepath)
-	d.mode = mode
 	return d, err
 }
 
