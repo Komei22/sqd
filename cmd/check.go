@@ -26,7 +26,6 @@ var checkCmd = &cobra.Command{
 			fmt.Printf("Can't read list file. (%s)", err)
 			os.Exit(1)
 		}
-
 		d, err := detector.New(querylogFilepath, detectionMode)
 		if err != nil {
 			fmt.Printf("Can't read query log file. (%s)", err)
@@ -38,7 +37,11 @@ var checkCmd = &cobra.Command{
 			fmt.Printf("Can't detection suspicious query. (%s)", err)
 			os.Exit(1)
 		}
-		detector.Dump(suspiciousQuerys)
+
+		fmt.Print("Suspicious querys\n")
+		for _, query := range suspiciousQuerys {
+			fmt.Printf("%s\n", query)
+		}
 	},
 }
 

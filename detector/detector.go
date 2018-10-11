@@ -2,7 +2,6 @@ package detector
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 
@@ -63,14 +62,6 @@ func (d *Detector) Detect(m *matcher.Matcher) ([]string, error) {
 		}
 	}
 	return suspiciousQuerys, nil
-}
-
-// Dump output suspiciousQuerys
-func Dump(suspiciousQuerys []string) {
-	fmt.Print("Suspicious querys\n")
-	for _, query := range suspiciousQuerys {
-		fmt.Printf("%s\n", query)
-	}
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
