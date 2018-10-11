@@ -26,7 +26,7 @@ DROP TABLE article`
 	m := matcher.NewMatcher()
 	m.SaveList(strings.NewReader(blacklist))
 
-	d := newDetector("blacklist")
+	d := newDetector(Blacklist)
 	d.saveQuerys(strings.NewReader(querys))
 
 	suspiciousQuerys, _ := d.Detect(m)
@@ -59,7 +59,7 @@ DROP TABLE article`
 	m := matcher.NewMatcher()
 	m.SaveList(strings.NewReader(whitelist))
 
-	d := newDetector("whitelist")
+	d := newDetector(Whitelist)
 	d.saveQuerys(strings.NewReader(querys))
 
 	suspiciousQuerys, _ := d.Detect(m)
