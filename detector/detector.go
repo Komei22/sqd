@@ -9,20 +9,30 @@ import (
 	"github.com/Komei22/sql-mask"
 )
 
+// Mode of detector
+type Mode int
+
+const (
+	// Whitelist mode
+	Whitelist = iota
+	// Blacklist mode
+	Blacklist
+)
+
 // Detector struct
 type Detector struct {
 	querys []string
-	mode   string
+	mode   Mode
 }
 
-func newDetector(mode string) *Detector {
+func newDetector(mode Mode) *Detector {
 	d := &Detector{}
 	d.mode = mode
 	return d
 }
 
 // New detector
-func New(filepath string, mode string) (*Detector, error) {
+func New(filepath string, mode Mode) (*Detector, error) {
 	d := newDetector(mode)
 	err := d.readQuerys(filepath)
 	return d, err
@@ -65,7 +75,7 @@ func (d *Detector) Detect(m *matcher.Matcher) ([]string, error) {
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
-	if d.mode == "whitelist" {
+	if d.mode == Whitelist {
 		if !m.IsMatchList(query) {
 			return true
 		}
