@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
@@ -11,18 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var checkCmd = &cobra.Command{
-	Use:   "check",
-	Short: "`sqd check` investigate query base on white/black list",
-	Long:  "`sqd check` investigate query base on white/black list",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if terminal.IsTerminal(0) {
-			if len(args) < 1 {
-				return errors.New("requires [query ...]")
-			}
-		}
-		return nil
-	},
+var (
+	querylogFilepath string
+	listFilepath     string
+	detectorMode     string
+)
+
+// checkCmd represents the check command
+var checklCmd = &cobra.Command{
+	Use:   "checkl",
+	Short: "`sqd checkl` investigate query log base on white/black list",
+	Long:  "`sqd checkl` investigate query log base on white/black list",
 	Run: func(cmd *cobra.Command, args []string) {
 		m, err := matcher.New(listFilepath)
 		if err != nil {
@@ -40,7 +37,8 @@ var checkCmd = &cobra.Command{
 			fmt.Printf("Unknown detection mode.(%s)", detectorMode)
 			os.Exit(1)
 		}
-		d, err := detector.New(args, mode)
+
+		d, err := detector.New(querylogFilepath, mode)
 		if err != nil {
 			fmt.Printf("Can't read query log file. (%s)", err)
 			os.Exit(1)
@@ -60,9 +58,9 @@ var checkCmd = &cobra.Command{
 }
 
 func init() {
-	checkCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
-	checkCmd.Flags().StringVarP(&detectorMode, "mode", "m", "whitelist", "detection mode (whitelist or blacklist)")
+	checklCmd.Flags().StringVarP(&querylogFilepath, "queryfile", "q", "", "query log file path")
+	checklCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
+	checklCmd.Flags().StringVarP(&detectorMode, "mode", "m", "whitelist", "detection mode (whitelist or blacklist)")
 
-	rootCmd.AddCommand(checkCmd)
-
+	rootCmd.AddCommand(checklCmd)
 }
