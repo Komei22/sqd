@@ -42,7 +42,7 @@ var checkCmd = &cobra.Command{
 		}
 		d, err := detector.New(args, mode)
 		if err != nil {
-			fmt.Printf("Can't read query log file. (%s)", err)
+			fmt.Printf("Can't read input query. (%s)", err)
 			os.Exit(1)
 		}
 

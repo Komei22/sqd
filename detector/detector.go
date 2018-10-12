@@ -36,7 +36,7 @@ func New(i interface{}, mode Mode) (*Detector, error) {
 	case []string:
 		d.querys = value
 	default:
-		err = fmt.Errorf("Undefined input type. (Value type: %T)", i)
+		err = fmt.Errorf("Parameter is unkown type. [Value type: %T]", i)
 		return nil, err
 	}
 
