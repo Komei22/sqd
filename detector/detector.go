@@ -2,9 +2,8 @@ package detector
 
 import (
 	"bufio"
-	"io"
+	"fmt"
 	"os"
-	"strings"
 
 	"github.com/Komei22/sqd/matcher"
 	"github.com/Komei22/sql-mask"
@@ -26,22 +25,18 @@ type Detector struct {
 	mode   Mode
 }
 
-func newDetector(mode Mode) *Detector {
-	d := &Detector{}
-	d.mode = mode
-	return d
-}
-
 // New detector
 func New(i interface{}, mode Mode) (*Detector, error) {
-	d := newDetector(mode)
+	d := &Detector{}
+	d.mode = mode
 	var err error
 	switch value := i.(type) {
 	case string:
 		err = d.readFile(value)
 	case []string:
-		err = d.readQuerys(value)
+		d.querys = value
 	default:
+		err = fmt.Errorf("Undefined input type. (Value type: %T)", i)
 		return nil, err
 	}
 
@@ -55,18 +50,6 @@ func (d *Detector) readFile(filepath string) error {
 	}
 	defer r.Close()
 
-	return d.saveQuerys(r)
-}
-
-func (d *Detector) readQuerys(querys []string) error {
-	var queryStr string
-	for _, q := range querys {
-		queryStr += q + "\n"
-	}
-	return d.saveQuerys(strings.NewReader(queryStr))
-}
-
-func (d *Detector) saveQuerys(r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
