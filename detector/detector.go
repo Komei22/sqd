@@ -21,8 +21,8 @@ const (
 
 // Detector struct
 type Detector struct {
-	querys []string
-	mode   Mode
+	queries []string
+	mode    Mode
 }
 
 // New detector
@@ -34,7 +34,7 @@ func New(i interface{}, mode Mode) (*Detector, error) {
 	case string:
 		err = d.readFile(value)
 	case []string:
-		d.querys = value
+		d.queries = value
 	default:
 		err = fmt.Errorf("Parameter is unkown type. [Value type: %T]", i)
 		return nil, err
@@ -55,24 +55,24 @@ func (d *Detector) readFile(filepath string) error {
 		if err := scanner.Err(); err != nil {
 			return err
 		}
-		d.querys = append(d.querys, scanner.Text())
+		d.queries = append(d.queries, scanner.Text())
 	}
 	return nil
 }
 
-// Detect find suspicious querys using matcher(whitelist or blacklist based)
+// Detect find suspicious queries using matcher(whitelist or blacklist based)
 func (d *Detector) Detect(m *matcher.Matcher) ([]string, error) {
-	var suspiciousQuerys []string
-	for _, query := range d.querys {
+	var suspiciousQueries []string
+	for _, query := range d.queries {
 		query, err := parser.Parse(query)
 		if err != nil {
 			return nil, err
 		}
 		if d.isSuspiciousQuery(query, m) {
-			suspiciousQuerys = append(suspiciousQuerys, query)
+			suspiciousQueries = append(suspiciousQueries, query)
 		}
 	}
-	return suspiciousQuerys, nil
+	return suspiciousQueries, nil
 }
 
 func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {

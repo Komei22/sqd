@@ -8,11 +8,11 @@ import (
 	"github.com/deckarep/golang-set"
 )
 
-func TestDetectSuspiciousQuerysUsingBlacklist(t *testing.T) {
+func TestDetectSuspiciousQueriesUsingBlacklist(t *testing.T) {
 	blacklist := `DROP DATABASE test
 DROP TABLE article`
 
-	querys := []string{
+	queries := []string{
 		"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?",
 		"DELETE FROM articles WHERE articles.id = ?",
 		"INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
@@ -28,24 +28,24 @@ DROP TABLE article`
 	m := matcher.NewMatcher()
 	m.SaveList(strings.NewReader(blacklist))
 
-	d, _ := New(querys, Blacklist)
-	suspiciousQuerys, _ := d.Detect(m)
+	d, _ := New(queries, Blacklist)
+	suspiciousQueries, _ := d.Detect(m)
 
-	suspiciousQuerysSet := mapset.NewSet()
-	for _, q := range suspiciousQuerys {
-		suspiciousQuerysSet.Add(q)
+	suspiciousQueriesSet := mapset.NewSet()
+	for _, q := range suspiciousQueries {
+		suspiciousQueriesSet.Add(q)
 	}
-	if !suspiciousQuerysSet.Equal(illegalQuerySet) {
-		t.Error("Failed detect suspicious querys based on blacklist.")
+	if !suspiciousQueriesSet.Equal(illegalQuerySet) {
+		t.Error("Failed detect suspicious queries based on blacklist.")
 	}
 }
 
-func TestDetectSuspiciousQuerysUsingwhitelist(t *testing.T) {
+func TestDetectSuspiciousQueriesUsingwhitelist(t *testing.T) {
 	whitelist := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?
 DELETE FROM articles WHERE articles.id = ?
 INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)`
 
-	querys := []string{
+	queries := []string{
 		"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?",
 		"DELETE FROM articles WHERE articles.id = ?",
 		"INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
@@ -61,14 +61,14 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	m := matcher.NewMatcher()
 	m.SaveList(strings.NewReader(whitelist))
 
-	d, _ := New(querys, Whitelist)
-	suspiciousQuerys, _ := d.Detect(m)
+	d, _ := New(queries, Whitelist)
+	suspiciousQueries, _ := d.Detect(m)
 
-	suspiciousQuerysSet := mapset.NewSet()
-	for _, q := range suspiciousQuerys {
-		suspiciousQuerysSet.Add(q)
+	suspiciousQueriesSet := mapset.NewSet()
+	for _, q := range suspiciousQueries {
+		suspiciousQueriesSet.Add(q)
 	}
-	if !suspiciousQuerysSet.Equal(illegalQuerySet) {
-		t.Error("Failed detect suspicious querys based on whitelist.")
+	if !suspiciousQueriesSet.Equal(illegalQuerySet) {
+		t.Error("Failed detect suspicious queries based on whitelist.")
 	}
 }

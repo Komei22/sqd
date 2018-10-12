@@ -46,14 +46,14 @@ var checkCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		suspiciousQuerys, err := d.Detect(m)
+		suspiciousQueries, err := d.Detect(m)
 		if err != nil {
 			fmt.Printf("Can't detection suspicious query. (%s)", err)
 			os.Exit(1)
 		}
 
-		fmt.Print("Suspicious querys:\n")
-		for _, query := range suspiciousQuerys {
+		fmt.Print("Suspicious queries:\n")
+		for _, query := range suspiciousQueries {
 			fmt.Printf("%s\n", query)
 		}
 	},

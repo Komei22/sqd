@@ -37,7 +37,7 @@ func (m *Matcher) loadList(filepath string) error {
 	return m.SaveList(reader)
 }
 
-// SaveList save querys to list
+// SaveList save queries to list
 func (m *Matcher) SaveList(r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
