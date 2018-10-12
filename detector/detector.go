@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/Komei22/sqd/matcher"
 	"github.com/Komei22/sql-mask"
@@ -32,13 +33,22 @@ func newDetector(mode Mode) *Detector {
 }
 
 // New detector
-func New(filepath string, mode Mode) (*Detector, error) {
+func New(i interface{}, mode Mode) (*Detector, error) {
 	d := newDetector(mode)
-	err := d.readQuerys(filepath)
+	var err error
+	switch value := i.(type) {
+	case string:
+		err = d.readFile(value)
+	case []string:
+		err = d.readQuerys(value)
+	default:
+		return nil, err
+	}
+
 	return d, err
 }
 
-func (d *Detector) readQuerys(filepath string) error {
+func (d *Detector) readFile(filepath string) error {
 	r, err := os.Open(filepath)
 	if err != nil {
 		return err
@@ -46,6 +56,14 @@ func (d *Detector) readQuerys(filepath string) error {
 	defer r.Close()
 
 	return d.saveQuerys(r)
+}
+
+func (d *Detector) readQuerys(querys []string) error {
+	var queryStr string
+	for _, q := range querys {
+		queryStr += q + "\n"
+	}
+	return d.saveQuerys(strings.NewReader(queryStr))
 }
 
 func (d *Detector) saveQuerys(r io.Reader) error {
