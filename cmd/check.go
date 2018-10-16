@@ -10,11 +10,10 @@ import (
 )
 
 var (
-	query            string
-	querylogFilepath string
-	listFilepath     string
-	isWhitelistMode  bool
-	isBlacklistMode  bool
+	query     string
+	querylog  string
+	blacklist string
+	whitelist string
 )
 
 var checkCmd = &cobra.Command{
@@ -22,31 +21,34 @@ var checkCmd = &cobra.Command{
 	Short: "`sqd check` investigate query base on white/black list",
 	Long:  "`sqd check` investigate query base on white/black list",
 	Run: func(cmd *cobra.Command, args []string) {
-		m, err := matcher.New(listFilepath)
-		if err != nil {
-			fmt.Printf("Can't read list file. (%s)", err)
-			os.Exit(1)
-		}
 
 		var mode detector.Mode
-		if (!isWhitelistMode && !isBlacklistMode) || (isWhitelistMode && isBlacklistMode) {
-			fmt.Print("Please set detection mode, Whitelist(-W) or Blacklist(-B)")
+		var m *matcher.Matcher
+		var err error
+		if (whitelist == "" && blacklist == "") || (whitelist != "" && blacklist != "") {
+			fmt.Print("Please set list file path, Whitelist(-W) or Blacklist(-B)")
 			os.Exit(1)
-		} else if !isWhitelistMode && isBlacklistMode {
+		} else if whitelist == "" && blacklist != "" {
 			mode = detector.Blacklist
-		} else if isWhitelistMode && !isBlacklistMode {
+			m, err = matcher.New(blacklist)
+			if err != nil {
+				fmt.Printf("Can't read list file. (%s)", err)
+				os.Exit(1)
+			}
+		} else if whitelist != "" && blacklist == "" {
 			mode = detector.Whitelist
+			m, err = matcher.New(whitelist)
+			if err != nil {
+				fmt.Printf("Can't read list file. (%s)", err)
+				os.Exit(1)
+			}
 		}
 
 		d := detector.New(m, mode)
-		if err != nil {
-			fmt.Printf("Can't read input query. (%s)", err)
-			os.Exit(1)
-		}
 
 		var suspiciousQueries []string
-		if querylogFilepath != "" {
-			suspiciousQueries, err = d.DetectFrom(querylogFilepath)
+		if querylog != "" {
+			suspiciousQueries, err = d.DetectFrom(querylog)
 			if err != nil {
 				fmt.Printf("Can't detection suspicious query. (%s)", err)
 			}
@@ -68,10 +70,9 @@ var checkCmd = &cobra.Command{
 
 func init() {
 	checkCmd.Flags().StringVarP(&query, "query", "q", "", "query string")
-	checkCmd.Flags().StringVarP(&querylogFilepath, "file", "f", "", "query log file path")
-	checkCmd.Flags().BoolVarP(&isWhitelistMode, "Whitelist", "W", false, "run whitelist mode")
-	checkCmd.Flags().BoolVarP(&isBlacklistMode, "Blacklist", "B", false, "run blacklist mode")
-	checkCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
+	checkCmd.Flags().StringVarP(&querylog, "file", "f", "", "query log file path")
+	checkCmd.Flags().StringVarP(&whitelist, "Whitelist", "W", "", "whitelist file path")
+	checkCmd.Flags().StringVarP(&blacklist, "Blacklist", "B", "", "blacklist file path")
 
 	rootCmd.AddCommand(checkCmd)
 }
