@@ -34,11 +34,11 @@ func (m *Matcher) loadList(filepath string) error {
 	}
 	defer reader.Close()
 
-	return m.SaveList(reader)
+	return m.ReadList(reader)
 }
 
-// SaveList save queries to list
-func (m *Matcher) SaveList(r io.Reader) error {
+// ReadList save queries to list
+func (m *Matcher) ReadList(r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
