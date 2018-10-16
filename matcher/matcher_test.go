@@ -17,7 +17,7 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	}
 
 	m := NewMatcher()
-	m.SaveList(strings.NewReader(queryList))
+	m.ReadList(strings.NewReader(queryList))
 
 	for _, query := range queries {
 		if !m.IsMatchList(query) {
@@ -33,7 +33,7 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	query := "DROP DATABASE production"
 
 	m := NewMatcher()
-	m.SaveList(strings.NewReader(queryList))
+	m.ReadList(strings.NewReader(queryList))
 
 	if m.IsMatchList(query) {
 		t.Error("Failed distinguish illegal query.")

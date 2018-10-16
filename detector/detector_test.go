@@ -26,16 +26,18 @@ DROP TABLE article`
 	)
 
 	m := matcher.NewMatcher()
-	m.SaveList(strings.NewReader(blacklist))
+	m.ReadList(strings.NewReader(blacklist))
 
-	d, _ := New(queries, Blacklist)
-	suspiciousQueries, _ := d.Detect(m)
-
-	suspiciousQueriesSet := mapset.NewSet()
-	for _, q := range suspiciousQueries {
-		suspiciousQueriesSet.Add(q)
+	d := New(m, Blacklist)
+	suspiciousQuerySet := mapset.NewSet()
+	for _, q := range queries {
+		sq, _ := d.Detect(q)
+		if sq != "" {
+			suspiciousQuerySet.Add(sq)
+		}
 	}
-	if !suspiciousQueriesSet.Equal(illegalQuerySet) {
+
+	if !suspiciousQuerySet.Equal(illegalQuerySet) {
 		t.Error("Failed detect suspicious queries based on blacklist.")
 	}
 }
@@ -59,16 +61,18 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?
 	)
 
 	m := matcher.NewMatcher()
-	m.SaveList(strings.NewReader(whitelist))
+	m.ReadList(strings.NewReader(whitelist))
 
-	d, _ := New(queries, Whitelist)
-	suspiciousQueries, _ := d.Detect(m)
-
-	suspiciousQueriesSet := mapset.NewSet()
-	for _, q := range suspiciousQueries {
-		suspiciousQueriesSet.Add(q)
+	d := New(m, Whitelist)
+	suspiciousQuerySet := mapset.NewSet()
+	for _, q := range queries {
+		sq, _ := d.Detect(q)
+		if sq != "" {
+			suspiciousQuerySet.Add(sq)
+		}
 	}
-	if !suspiciousQueriesSet.Equal(illegalQuerySet) {
+
+	if !suspiciousQuerySet.Equal(illegalQuerySet) {
 		t.Error("Failed detect suspicious queries based on whitelist.")
 	}
 }
