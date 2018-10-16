@@ -2,7 +2,6 @@ package detector
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 
 	"github.com/Komei22/sqd/matcher"
@@ -21,67 +20,63 @@ const (
 
 // Detector struct
 type Detector struct {
-	queries []string
 	mode    Mode
+	matcher *matcher.Matcher
 }
 
 // New detector
-func New(i interface{}, mode Mode) (*Detector, error) {
+func New(m *matcher.Matcher, mode Mode) *Detector {
 	d := &Detector{}
 	d.mode = mode
-	var err error
-	switch value := i.(type) {
-	case string:
-		err = d.readFile(value)
-	case []string:
-		d.queries = value
-	default:
-		err = fmt.Errorf("Parameter is unkown type. [Value type: %T]", i)
-		return nil, err
-	}
-
-	return d, err
+	d.matcher = m
+	return d
 }
 
-func (d *Detector) readFile(filepath string) error {
+// Detect suspicious query
+func (d *Detector) Detect(query string) (string, error) {
+	q, err := parser.Parse(query)
+	if err != nil {
+		return "", err
+	}
+	if d.isSuspiciousQuery(q) {
+		return query, nil
+	}
+	return "", nil
+}
+
+// DetectFrom query log file
+func (d *Detector) DetectFrom(filepath string) ([]string, error) {
 	r, err := os.Open(filepath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer r.Close()
 
+	var suspiciousQueries []string
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			return err
+			return nil, err
 		}
-		d.queries = append(d.queries, scanner.Text())
-	}
-	return nil
-}
-
-// Detect find suspicious queries using matcher(whitelist or blacklist based)
-func (d *Detector) Detect(m *matcher.Matcher) ([]string, error) {
-	var suspiciousQueries []string
-	for _, query := range d.queries {
-		query, err := parser.Parse(query)
+		query := scanner.Text()
+		q, err := parser.Parse(query)
 		if err != nil {
 			return nil, err
 		}
-		if d.isSuspiciousQuery(query, m) {
+		if d.isSuspiciousQuery(q) {
 			suspiciousQueries = append(suspiciousQueries, query)
 		}
 	}
 	return suspiciousQueries, nil
 }
 
-func (d *Detector) isSuspiciousQuery(query string, m *matcher.Matcher) bool {
+func (d *Detector) isSuspiciousQuery(query string) bool {
 	if d.mode == Whitelist {
-		if !m.IsMatchList(query) {
+		if !d.matcher.IsMatchList(query) {
 			return true
 		}
 	} else {
-		if m.IsMatchList(query) {
+		if d.matcher.IsMatchList(query) {
 			return true
 		}
 	}
