@@ -59,11 +59,11 @@ func (d *Detector) DetectFrom(filepath string) ([]string, error) {
 			return nil, err
 		}
 		query := scanner.Text()
-		q, err := parser.Parse(query)
+		q, err := d.Detect(query)
 		if err != nil {
 			return nil, err
 		}
-		if d.isSuspiciousQuery(q) {
+		if q != "" {
 			suspiciousQueries = append(suspiciousQueries, query)
 		}
 	}
