@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
@@ -12,6 +10,7 @@ import (
 )
 
 var (
+	query            string
 	querylogFilepath string
 	listFilepath     string
 	isWhitelistMode  bool
@@ -22,14 +21,6 @@ var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "`sqd check` investigate query base on white/black list",
 	Long:  "`sqd check` investigate query base on white/black list",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if terminal.IsTerminal(0) {
-			if len(args) < 1 {
-				return errors.New("requires [query ...]")
-			}
-		}
-		return nil
-	},
 	Run: func(cmd *cobra.Command, args []string) {
 		m, err := matcher.New(listFilepath)
 		if err != nil {
@@ -47,30 +38,40 @@ var checkCmd = &cobra.Command{
 			mode = detector.Whitelist
 		}
 
-		d, err := detector.New(args, mode)
+		d := detector.New(m, mode)
 		if err != nil {
 			fmt.Printf("Can't read input query. (%s)", err)
 			os.Exit(1)
 		}
 
-		suspiciousQueries, err := d.Detect(m)
-		if err != nil {
-			fmt.Printf("Can't detection suspicious query. (%s)", err)
-			os.Exit(1)
+		var suspiciousQueries []string
+		if querylogFilepath != "" {
+			suspiciousQueries, err = d.DetectFrom(querylogFilepath)
+			if err != nil {
+				fmt.Printf("Can't detection suspicious query. (%s)", err)
+			}
+		} else {
+			suspiciousQuery, err := d.Detect(query)
+			if err != nil {
+				fmt.Printf("Can't detection suspicious query. (%s)", err)
+				os.Exit(1)
+			}
+			suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
 		}
 
 		fmt.Print("Suspicious queries:\n")
-		for _, query := range suspiciousQueries {
-			fmt.Printf("%s\n", query)
+		for _, sq := range suspiciousQueries {
+			fmt.Printf("%s\n", sq)
 		}
 	},
 }
 
 func init() {
+	checkCmd.Flags().StringVarP(&query, "query", "q", "", "query string")
+	checkCmd.Flags().StringVarP(&querylogFilepath, "file", "f", "", "query log file path")
 	checkCmd.Flags().BoolVarP(&isWhitelistMode, "Whitelist", "W", false, "run whitelist mode")
 	checkCmd.Flags().BoolVarP(&isBlacklistMode, "Blacklist", "B", false, "run blacklist mode")
 	checkCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
 
 	rootCmd.AddCommand(checkCmd)
-
 }
