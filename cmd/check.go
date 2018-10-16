@@ -11,6 +11,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	querylogFilepath string
+	listFilepath     string
+	isWhitelistMode  bool
+	isBlacklistMode  bool
+)
+
 var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "`sqd check` investigate query base on white/black list",
@@ -31,15 +38,15 @@ var checkCmd = &cobra.Command{
 		}
 
 		var mode detector.Mode
-		switch detectorMode {
-		case "whitelist":
-			mode = detector.Whitelist
-		case "blacklist":
-			mode = detector.Blacklist
-		default:
-			fmt.Printf("Unknown detection mode.(%s)", detectorMode)
+		if (!isWhitelistMode && !isBlacklistMode) || (isWhitelistMode && isBlacklistMode) {
+			fmt.Print("Please set detection mode, Whitelist(-W) or Blacklist(-B)")
 			os.Exit(1)
+		} else if !isWhitelistMode && isBlacklistMode {
+			mode = detector.Blacklist
+		} else if isWhitelistMode && !isBlacklistMode {
+			mode = detector.Whitelist
 		}
+
 		d, err := detector.New(args, mode)
 		if err != nil {
 			fmt.Printf("Can't read input query. (%s)", err)
@@ -60,8 +67,9 @@ var checkCmd = &cobra.Command{
 }
 
 func init() {
+	checkCmd.Flags().BoolVarP(&isWhitelistMode, "Whitelist", "W", false, "run whitelist mode")
+	checkCmd.Flags().BoolVarP(&isBlacklistMode, "Blacklist", "B", false, "run blacklist mode")
 	checkCmd.Flags().StringVarP(&listFilepath, "list", "l", "", "file path of blacklist or whitelist")
-	checkCmd.Flags().StringVarP(&detectorMode, "mode", "m", "whitelist", "detection mode (whitelist or blacklist)")
 
 	rootCmd.AddCommand(checkCmd)
 
