@@ -2,13 +2,16 @@
 suspicious query detection
 
 ## Usage
-`sqd check` detect suspicious query in query log file using list file(blacklist or whitelist).
+`sqd` detect suspicious query using list file(blacklist or whitelist).
 
 ```
-$ sqd check -m whitelist -q query.log -l whitelist
-Suspicious queies
-select * from articles
-drop database articles
+$ ./sqd -q "DROP TABLE articles" -B testdata/blacklist
+Suspicious queries:
+DROP TABLE articles
+
+./sqd -q "DROP TABLE articles" -W testdata/whitelist
+Suspicious queries:
+DROP TABLE articles
 ```
 
 ## File format
