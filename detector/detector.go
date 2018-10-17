@@ -2,7 +2,7 @@ package detector
 
 import (
 	"bufio"
-	"os"
+	"io"
 
 	"github.com/Komei22/sqd/matcher"
 	"github.com/Komei22/sql-mask"
@@ -45,13 +45,7 @@ func (d *Detector) Detect(query string) (string, error) {
 }
 
 // DetectFrom query log file
-func (d *Detector) DetectFrom(filepath string) ([]string, error) {
-	r, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	defer r.Close()
-
+func (d *Detector) DetectFrom(r io.Reader) ([]string, error) {
 	var suspiciousQueries []string
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {

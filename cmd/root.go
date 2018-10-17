@@ -47,7 +47,13 @@ func newRootCmd() *cobra.Command {
 
 			var suspiciousQueries []string
 			if querylog != "" {
-				suspiciousQueries, err = d.DetectFrom(querylog)
+				r, err := os.Open(querylog)
+				if err != nil {
+					return err
+				}
+				defer r.Close()
+
+				suspiciousQueries, err = d.DetectFrom(r)
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
