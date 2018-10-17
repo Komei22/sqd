@@ -1,0 +1,4 @@
+SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 10
+DELETE FROM articles WHERE articles.id = 1
+SELECT * FROM articles
+DROP TABLE articles
