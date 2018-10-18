@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/Komei22/sqd/server"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
@@ -57,12 +58,15 @@ func newRootCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
-			} else {
+			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
 				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
+			} else {
+				s := server.New(d)
+				s.Start()
 			}
 
 			cmd.Println("Suspicious queries:")
