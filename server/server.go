@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Komei22/sqd/detector"
+	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sql-mask"
 )
 
@@ -39,6 +40,6 @@ func (s *Server) handleDetection(querylog string) {
 		fmt.Println(err)
 	}
 	if suspiciousQuery != "" {
-		fmt.Println(querylog)
+		eventor.DumpStdout([]string{suspiciousQuery})
 	}
 }

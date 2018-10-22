@@ -3,11 +3,12 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/Komei22/sqd/server"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
+	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
+	"github.com/Komei22/sqd/server"
 	"github.com/spf13/cobra"
 )
 
@@ -69,10 +70,7 @@ func newRootCmd() *cobra.Command {
 				s.Start()
 			}
 
-			cmd.Println("Suspicious queries:")
-			for _, sq := range suspiciousQueries {
-				cmd.Println(sq)
-			}
+			eventor.DumpStdout(suspiciousQueries)
 
 			return nil
 		},
