@@ -2,11 +2,11 @@ package server
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
+	"github.com/Komei22/sql-mask"
 )
 
 // Server struct
@@ -29,13 +29,16 @@ func (s *Server) Start() {
 	}
 }
 
-func (s *Server) handleDetection(querylogJSON string) {
-	jsonBytes := ([]byte)(querylogJSON)
-	var querylog map[string]interface{}
-	json.Unmarshal(jsonBytes, &querylog)
-	suspiciousQuery, err := s.detector.Detect(querylog["query"].(string))
+func (s *Server) handleDetection(querylog string) {
+	parsedQuery, err := parser.Parse(querylog)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(suspiciousQuery)
+	suspiciousQuery, err := s.detector.Detect(parsedQuery)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if suspiciousQuery != "" {
+		fmt.Println(querylog)
+	}
 }
