@@ -24,9 +24,13 @@ func New(d *detector.Detector) *SqlScanner {
 
 // Scan sql_scanner
 func (s *SqlScanner) Scan(r io.Reader) {
+	scanner := bufio.NewScanner(r)
 	for {
-		scanner := bufio.NewScanner(r)
 		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
 		s.detection(scanner.Text())
 	}
 }
