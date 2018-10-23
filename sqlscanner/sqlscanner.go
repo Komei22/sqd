@@ -31,14 +31,14 @@ func (s *SQLScanner) Start(r io.Reader) {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
-		err := s.detection(scanner.Text())
+		err := s.detect(scanner.Text())
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}
 }
 
-func (s *SQLScanner) detection(querylog string) error {
+func (s *SQLScanner) detect(querylog string) error {
 	parsedQuery, err := parser.Parse(querylog)
 	if err != nil {
 		return err
