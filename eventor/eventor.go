@@ -2,11 +2,12 @@ package eventor
 
 import (
 	"fmt"
+	"io"
 )
 
-// DumpStdout dump suspicious query for stdout
-func DumpStdout(suspiciousQueries []string) {
+// Dump suspicious queryies
+func Dump(w io.Writer, suspiciousQueries []string) {
 	for _, sq := range suspiciousQueries {
-		fmt.Println(sq)
+		fmt.Fprintln(w, sq)
 	}
 }

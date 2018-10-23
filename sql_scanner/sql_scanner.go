@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/Komei22/sqd/detector"
 	"github.com/Komei22/sqd/eventor"
@@ -40,6 +41,6 @@ func (s *SqlScanner) detection(querylog string) {
 		fmt.Println(err)
 	}
 	if suspiciousQuery != "" {
-		eventor.DumpStdout([]string{suspiciousQuery})
+		eventor.Dump(os.Stdout, []string{suspiciousQuery})
 	}
 }

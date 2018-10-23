@@ -70,7 +70,7 @@ func newRootCmd() *cobra.Command {
 				s.Scan(os.Stdin)
 			}
 
-			eventor.DumpStdout(suspiciousQueries)
+			eventor.Dump(os.Stdout, suspiciousQueries)
 
 			return nil
 		},
