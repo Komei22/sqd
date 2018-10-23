@@ -8,7 +8,7 @@ import (
 	"github.com/Komei22/sqd/detector"
 	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
-	"github.com/Komei22/sqd/server"
+	"github.com/Komei22/sqd/sql_scanner"
 	"github.com/spf13/cobra"
 )
 
@@ -66,7 +66,7 @@ func newRootCmd() *cobra.Command {
 				}
 				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
 			} else {
-				s := server.New(d)
+				s := sql_scanner.New(d)
 				s.Start()
 			}
 

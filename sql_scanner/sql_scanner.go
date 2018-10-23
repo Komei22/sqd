@@ -1,4 +1,4 @@
-package server
+package sql_scanner
 
 import (
 	"bufio"
@@ -10,19 +10,19 @@ import (
 	"github.com/Komei22/sql-mask"
 )
 
-// Server struct
-type Server struct {
+// SqlScanner struct
+type SqlScanner struct {
 	detector *detector.Detector
 }
 
-// New server
-func New(d *detector.Detector) *Server {
-	s := &Server{detector: d}
+// New SqlScanner
+func New(d *detector.Detector) *SqlScanner {
+	s := &SqlScanner{detector: d}
 	return s
 }
 
-// Start server
-func (s *Server) Start() {
+// Start sql_scanner
+func (s *SqlScanner) Start() {
 	for {
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -30,7 +30,7 @@ func (s *Server) Start() {
 	}
 }
 
-func (s *Server) handleDetection(querylog string) {
+func (s *SqlScanner) handleDetection(querylog string) {
 	parsedQuery, err := parser.Parse(querylog)
 	if err != nil {
 		fmt.Println(err)
