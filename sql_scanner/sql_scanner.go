@@ -3,7 +3,7 @@ package sql_scanner
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 
 	"github.com/Komei22/sqd/detector"
 	"github.com/Komei22/sqd/eventor"
@@ -21,16 +21,16 @@ func New(d *detector.Detector) *SqlScanner {
 	return s
 }
 
-// Start sql_scanner
-func (s *SqlScanner) Start() {
+// Scan sql_scanner
+func (s *SqlScanner) Scan(r io.Reader) {
 	for {
-		scanner := bufio.NewScanner(os.Stdin)
+		scanner := bufio.NewScanner(r)
 		scanner.Scan()
-		go s.handleDetection(scanner.Text())
+		s.detection(scanner.Text())
 	}
 }
 
-func (s *SqlScanner) handleDetection(querylog string) {
+func (s *SqlScanner) detection(querylog string) {
 	parsedQuery, err := parser.Parse(querylog)
 	if err != nil {
 		fmt.Println(err)
