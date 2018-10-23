@@ -5,8 +5,8 @@ import (
 	"io"
 )
 
-// Dump suspicious queryies
-func Dump(w io.Writer, suspiciousQueries []string) {
+// Print suspicious queryies
+func Print(w io.Writer, suspiciousQueries []string) {
 	for _, sq := range suspiciousQueries {
 		fmt.Fprintln(w, sq)
 	}

@@ -22,8 +22,8 @@ func New(d *detector.Detector) *SQLScanner {
 	return s
 }
 
-// Scan sql_scanner
-func (s *SQLScanner) Scan(r io.Reader) {
+// Start sql_scanner
+func (s *SQLScanner) Start(r io.Reader) {
 	scanner := bufio.NewScanner(r)
 	for {
 		scanner.Scan()
@@ -45,6 +45,6 @@ func (s *SQLScanner) detection(querylog string) {
 		fmt.Println(err)
 	}
 	if suspiciousQuery != "" {
-		eventor.Dump(os.Stdout, []string{suspiciousQuery})
+		eventor.Print(os.Stdout, []string{suspiciousQuery})
 	}
 }
