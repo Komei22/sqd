@@ -6,14 +6,18 @@ import (
 )
 
 // Print suspicious queryies
-func Print(w io.Writer, c <-chan string) {
+func Print(w io.Writer, suspiciousQueryChan <-chan string, errChan <-chan error) error {
 	for {
-		q, ok := <-c
-		if !ok {
-			break
-		}
-		if q != "" {
-			fmt.Fprintln(w, q)
+		select {
+		case suspiciousQuery, ok := <-suspiciousQueryChan:
+			if !ok {
+				return nil
+			}
+			fmt.Fprintln(w, suspiciousQuery)
+		case err := <-errChan:
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
