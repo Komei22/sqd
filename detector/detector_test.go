@@ -26,7 +26,18 @@ DROP TABLE article`
 	m.ReadList(strings.NewReader(blacklist))
 
 	d := New(m, Blacklist)
-	suspiciousQueries, _ := d.DetectFrom(strings.NewReader(queries))
+	suspiciousQueryChan := make(chan string)
+	errChan := make(chan error)
+	go d.DetectFrom(strings.NewReader(queries), suspiciousQueryChan, errChan)
+
+	suspiciousQueries := []string{}
+	for {
+		query, ok := <-suspiciousQueryChan
+		if !ok {
+			break
+		}
+		suspiciousQueries = append(suspiciousQueries, query)
+	}
 
 	for idx, sq := range suspiciousQueries {
 		if illegalQueries[idx] != sq {
@@ -55,7 +66,18 @@ DROP TABLE article`
 	m.ReadList(strings.NewReader(whitelist))
 
 	d := New(m, Whitelist)
-	suspiciousQueries, _ := d.DetectFrom(strings.NewReader(queries))
+	suspiciousQueryChan := make(chan string)
+	errChan := make(chan error)
+	go d.DetectFrom(strings.NewReader(queries), suspiciousQueryChan, errChan)
+
+	suspiciousQueries := []string{}
+	for {
+		query, ok := <-suspiciousQueryChan
+		if !ok {
+			break
+		}
+		suspiciousQueries = append(suspiciousQueries, query)
+	}
 
 	for idx, sq := range suspiciousQueries {
 		if illegalQueries[idx] != sq {
