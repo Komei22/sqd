@@ -8,8 +8,8 @@ import (
 	"github.com/Komei22/sqd/detector"
 	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
-	"github.com/Komei22/sqd/sqlscanner"
 	"github.com/spf13/cobra"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 // NewRootCmd return rootCmd
@@ -66,8 +66,12 @@ func newRootCmd() *cobra.Command {
 				}
 				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
 			} else {
-				s := sqlscanner.New(d)
-				s.Scan(os.Stdin)
+				if terminal.IsTerminal(0) {
+					cmd.Help()
+					return nil
+				}
+
+				d.DetectFrom(os.Stdin)
 			}
 
 			eventor.Print(os.Stdout, suspiciousQueries)
