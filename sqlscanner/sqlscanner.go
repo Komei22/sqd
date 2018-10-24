@@ -22,8 +22,8 @@ func New(d *detector.Detector) *SQLScanner {
 	return s
 }
 
-// Start scan sql
-func (s *SQLScanner) Start(r io.Reader) {
+// Scan sql
+func (s *SQLScanner) Scan(r io.Reader) {
 	scanner := bufio.NewScanner(r)
 	for {
 		scanner.Scan()

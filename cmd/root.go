@@ -67,7 +67,7 @@ func newRootCmd() *cobra.Command {
 				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
 			} else {
 				s := sqlscanner.New(d)
-				s.Start(os.Stdin)
+				s.Scan(os.Stdin)
 			}
 
 			eventor.Print(os.Stdout, suspiciousQueries)
