@@ -3,9 +3,7 @@ package detector
 import (
 	"bufio"
 	"io"
-	"os"
 
-	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
 	"github.com/Komei22/sql-mask"
 )
@@ -47,27 +45,22 @@ func (d *Detector) Detect(query string) (string, error) {
 }
 
 // DetectFrom query log file
-func (d *Detector) DetectFrom(r io.Reader) ([]string, error) {
-	var suspiciousQueries []string
+func (d *Detector) DetectFrom(r io.Reader, c chan<- string) {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			return nil, err
+			// error handling
 		}
 		query := scanner.Text()
-		q, err := d.Detect(query)
+		suspiciousQuery, err := d.Detect(query)
 		if err != nil {
-			return nil, err
+			// error handling
 		}
-		if q != "" {
-			if r == os.Stdin {
-				eventor.Print(os.Stdout, []string{q})
-			} else {
-				suspiciousQueries = append(suspiciousQueries, query)
-			}
+		if suspiciousQuery != "" {
+			c <- suspiciousQuery
 		}
 	}
-	return suspiciousQueries, nil
+	close(c)
 }
 
 func (d *Detector) isSuspiciousQuery(query string) bool {

@@ -47,34 +47,30 @@ func newRootCmd() *cobra.Command {
 
 			d := detector.New(m, mode)
 
-			var suspiciousQueries []string
 			if querylog != "" {
 				r, err := os.Open(querylog)
 				if err != nil {
 					return err
 				}
 				defer r.Close()
-
-				suspiciousQueries, err = d.DetectFrom(r)
-				if err != nil {
-					return fmt.Errorf("Can't detection suspicious query: %s", err)
-				}
+				suspiciousQueryChan := make(chan string)
+				go d.DetectFrom(r, suspiciousQueryChan)
+				eventor.Print(os.Stdout, suspiciousQueryChan)
 			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
-				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
+				cmd.Println(suspiciousQuery)
 			} else {
 				if terminal.IsTerminal(0) {
 					cmd.Help()
 					return nil
 				}
-
-				d.DetectFrom(os.Stdin)
+				suspiciousQueryChan := make(chan string)
+				go d.DetectFrom(os.Stdin, suspiciousQueryChan)
+				eventor.Print(os.Stdout, suspiciousQueryChan)
 			}
-
-			eventor.Print(os.Stdout, suspiciousQueries)
 
 			return nil
 		},

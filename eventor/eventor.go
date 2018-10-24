@@ -6,8 +6,14 @@ import (
 )
 
 // Print suspicious queryies
-func Print(w io.Writer, suspiciousQueries []string) {
-	for _, sq := range suspiciousQueries {
-		fmt.Fprintln(w, sq)
+func Print(w io.Writer, c <-chan string) {
+	for {
+		q, ok := <-c
+		if !ok {
+			break
+		}
+		if q != "" {
+			fmt.Fprintln(w, q)
+		}
 	}
 }
