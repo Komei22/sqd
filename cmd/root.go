@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/Komei22/sqd/detector"
-	"github.com/Komei22/sqd/eventor"
+	// "github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
@@ -54,8 +54,21 @@ func newRootCmd() *cobra.Command {
 				}
 				defer r.Close()
 				suspiciousQueryChan := make(chan string)
-				go d.DetectFrom(r, suspiciousQueryChan)
-				eventor.Print(os.Stdout, suspiciousQueryChan)
+				errChan := make(chan error)
+				go d.DetectFrom(r, suspiciousQueryChan, errChan)
+				for {
+					select {
+					case suspiciousQuery, ok := <-suspiciousQueryChan:
+						if !ok {
+							return nil
+						}
+						cmd.Println(suspiciousQuery)
+					case err := <-errChan:
+						if err != nil {
+							return fmt.Errorf("Can't detection suspicious query: %s", err)
+						}
+					}
+				}
 			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
 				if err != nil {
@@ -68,8 +81,21 @@ func newRootCmd() *cobra.Command {
 					return nil
 				}
 				suspiciousQueryChan := make(chan string)
-				go d.DetectFrom(os.Stdin, suspiciousQueryChan)
-				eventor.Print(os.Stdout, suspiciousQueryChan)
+				errChan := make(chan error)
+				go d.DetectFrom(os.Stdin, suspiciousQueryChan, errChan)
+				for {
+					select {
+					case suspiciousQuery, ok := <-suspiciousQueryChan:
+						if !ok {
+							return nil
+						}
+						cmd.Println(suspiciousQuery)
+					case err := <-errChan:
+						if err != nil {
+							return fmt.Errorf("Can't detection suspicious query: %s", err)
+						}
+					}
+				}
 			}
 
 			return nil
