@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
@@ -53,12 +54,9 @@ func newRootCmd() *cobra.Command {
 					return err
 				}
 				defer r.Close()
-				suspiciousQueryChan := make(chan string)
-				errChan := make(chan error)
-				go d.DetectFrom(r, suspiciousQueryChan, errChan)
-				err = eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
+				err = detectQueries(r, d)
 				if err != nil {
-					return fmt.Errorf("Can't detection suspicious query: %s", err)
+					return err
 				}
 			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
@@ -71,12 +69,9 @@ func newRootCmd() *cobra.Command {
 					cmd.Help()
 					return nil
 				}
-				suspiciousQueryChan := make(chan string)
-				errChan := make(chan error)
-				go d.DetectFrom(os.Stdin, suspiciousQueryChan, errChan)
-				err = eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
+				err = detectQueries(os.Stdin, d)
 				if err != nil {
-					return fmt.Errorf("Can't detection suspicious query: %s", err)
+					return err
 				}
 			}
 
@@ -99,4 +94,15 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func detectQueries(r io.Reader, d *detector.Detector) error {
+	suspiciousQueryChan := make(chan string)
+	errChan := make(chan error)
+	go d.DetectFrom(r, suspiciousQueryChan, errChan)
+	err := eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
+	if err != nil {
+		return fmt.Errorf("Can't detection suspicious query: %s", err)
+	}
+	return nil
 }
