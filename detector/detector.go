@@ -60,8 +60,7 @@ func (d *Detector) DetectFrom(r io.Reader, suspiciousQueryChan chan<- string, er
 			suspiciousQueryChan <- suspiciousQuery
 		}
 	}
-	close(suspiciousQueryChan)
-	close(errChan)
+	suspiciousQueryChan <- ""
 }
 
 func (d *Detector) isSuspiciousQuery(query string) bool {

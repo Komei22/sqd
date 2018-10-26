@@ -99,9 +99,11 @@ func Execute() {
 func detectQueries(r io.Reader, d *detector.Detector) error {
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
+	defer close(errChan)
+	defer close(suspiciousQueryChan)
+
 	go d.DetectFrom(r, suspiciousQueryChan, errChan)
-	err := eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
-	if err != nil {
+	if err := eventor.Print(os.Stdout, suspiciousQueryChan, errChan); err != nil {
 		return fmt.Errorf("Can't detection suspicious query: %s", err)
 	}
 	return nil
