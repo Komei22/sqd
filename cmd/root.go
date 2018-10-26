@@ -3,11 +3,14 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Komei22/sqd/detector"
+	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
 	"github.com/spf13/cobra"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 // NewRootCmd return rootCmd
@@ -45,29 +48,25 @@ func newRootCmd() *cobra.Command {
 
 			d := detector.New(m, mode)
 
-			var suspiciousQueries []string
 			if querylog != "" {
 				r, err := os.Open(querylog)
 				if err != nil {
 					return err
 				}
 				defer r.Close()
-
-				suspiciousQueries, err = d.DetectFrom(r)
-				if err != nil {
-					return fmt.Errorf("Can't detection suspicious query: %s", err)
-				}
-			} else {
+				detectQueries(r, d)
+			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
-				suspiciousQueries = append(suspiciousQueries, suspiciousQuery)
-			}
-
-			cmd.Println("Suspicious queries:")
-			for _, sq := range suspiciousQueries {
-				cmd.Println(sq)
+				cmd.Println(suspiciousQuery)
+			} else {
+				if terminal.IsTerminal(0) {
+					cmd.Help()
+					return nil
+				}
+				detectQueries(os.Stdin, d)
 			}
 
 			return nil
@@ -89,4 +88,14 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func detectQueries(r io.Reader, d *detector.Detector) {
+	suspiciousQueryChan := make(chan string)
+	errChan := make(chan error)
+	defer close(errChan)
+	defer close(suspiciousQueryChan)
+
+	go d.DetectFrom(r, suspiciousQueryChan, errChan)
+	eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
 }

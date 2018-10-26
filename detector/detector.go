@@ -45,23 +45,22 @@ func (d *Detector) Detect(query string) (string, error) {
 }
 
 // DetectFrom query log file
-func (d *Detector) DetectFrom(r io.Reader) ([]string, error) {
-	var suspiciousQueries []string
+func (d *Detector) DetectFrom(r io.Reader, suspiciousQueryChan chan<- string, errChan chan<- error) {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			return nil, err
+			errChan <- err
 		}
 		query := scanner.Text()
-		q, err := d.Detect(query)
+		suspiciousQuery, err := d.Detect(query)
 		if err != nil {
-			return nil, err
+			errChan <- err
 		}
-		if q != "" {
-			suspiciousQueries = append(suspiciousQueries, query)
+		if suspiciousQuery != "" {
+			suspiciousQueryChan <- suspiciousQuery
 		}
 	}
-	return suspiciousQueries, nil
+	suspiciousQueryChan <- ""
 }
 
 func (d *Detector) isSuspiciousQuery(query string) bool {
