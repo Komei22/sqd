@@ -28,12 +28,14 @@ DROP TABLE article`
 	d := New(m, Blacklist)
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
+	defer close(suspiciousQueryChan)
+	defer close(errChan)
 	go d.DetectFrom(strings.NewReader(queries), suspiciousQueryChan, errChan)
 
 	suspiciousQueries := []string{}
 	for {
-		query, ok := <-suspiciousQueryChan
-		if !ok {
+		query := <-suspiciousQueryChan
+		if query == "" {
 			break
 		}
 		suspiciousQueries = append(suspiciousQueries, query)
@@ -68,12 +70,14 @@ DROP TABLE article`
 	d := New(m, Whitelist)
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
+	defer close(suspiciousQueryChan)
+	defer close(errChan)
 	go d.DetectFrom(strings.NewReader(queries), suspiciousQueryChan, errChan)
 
 	suspiciousQueries := []string{}
 	for {
-		query, ok := <-suspiciousQueryChan
-		if !ok {
+		query := <-suspiciousQueryChan
+		if query == "" {
 			break
 		}
 		suspiciousQueries = append(suspiciousQueries, query)
