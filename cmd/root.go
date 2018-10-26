@@ -77,6 +77,8 @@ func newRootCmd() *cobra.Command {
 	rootCmd.Flags().StringVarP(&whitelist, "Whitelist", "W", "", "whitelist file path")
 	rootCmd.Flags().StringVarP(&blacklist, "Blacklist", "B", "", "blacklist file path")
 
+	rootCmd.AddCommand(newCreateCmd())
+
 	return rootCmd
 }
 
