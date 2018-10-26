@@ -54,10 +54,7 @@ func newRootCmd() *cobra.Command {
 					return err
 				}
 				defer r.Close()
-				err = detectQueries(r, d)
-				if err != nil {
-					return err
-				}
+				detectQueries(r, d)
 			} else if query != "" {
 				suspiciousQuery, err := d.Detect(query)
 				if err != nil {
@@ -69,10 +66,7 @@ func newRootCmd() *cobra.Command {
 					cmd.Help()
 					return nil
 				}
-				err = detectQueries(os.Stdin, d)
-				if err != nil {
-					return err
-				}
+				detectQueries(os.Stdin, d)
 			}
 
 			return nil
@@ -96,15 +90,12 @@ func Execute() {
 	}
 }
 
-func detectQueries(r io.Reader, d *detector.Detector) error {
+func detectQueries(r io.Reader, d *detector.Detector) {
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
 	defer close(errChan)
 	defer close(suspiciousQueryChan)
 
 	go d.DetectFrom(r, suspiciousQueryChan, errChan)
-	if err := eventor.Print(os.Stdout, suspiciousQueryChan, errChan); err != nil {
-		return fmt.Errorf("Can't detection suspicious query: %s", err)
-	}
-	return nil
+	eventor.Print(os.Stdout, suspiciousQueryChan, errChan)
 }
