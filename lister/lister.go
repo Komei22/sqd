@@ -6,16 +6,12 @@ import (
 	"os"
 
 	"github.com/Komei22/sql-mask"
+	"github.com/deckarep/golang-set"
 )
 
 // Create whitelist
 func Create(r io.Reader, output string) error {
-	file, err := os.Create(output)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
+	list := mapset.NewSet()
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
@@ -26,7 +22,23 @@ func Create(r io.Reader, output string) error {
 		if err != nil {
 			return err
 		}
-		file.Write(([]byte)(queryStruct + "\n"))
+		list.Add(queryStruct)
+	}
+
+	return save(output, list)
+}
+
+func save(filepath string, list mapset.Set) error {
+	file, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	it := list.Iterator()
+
+	for q := range it.C {
+		file.Write(([]byte)(q.(string) + "\n"))
 	}
 	return nil
 }
