@@ -18,7 +18,7 @@ func Create(r io.Reader, w io.Writer) error {
 		if err := scanner.Err(); err != nil {
 			return err
 		}
-		query := formatter.TrimControlChara(scanner.Text())
+		query := formatter.Format(scanner.Text())
 		queryStruct, err := parser.Parse(query)
 		if err != nil {
 			return err
