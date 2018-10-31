@@ -18,8 +18,15 @@ func newCreateCmd() *cobra.Command {
 				cmd.Help()
 				return nil
 			}
-			lister.Create(os.Stdin, os.Stdout)
 
+			list, err := lister.Create(os.Stdin)
+			if err != nil {
+				return err
+			}
+
+			for q := range list.Iter() {
+				cmd.Println(q)
+			}
 			return nil
 		},
 	}

@@ -2,7 +2,6 @@ package lister
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 
 	"github.com/Komei22/sqd/formatter"
@@ -11,24 +10,20 @@ import (
 )
 
 // Create whitelist
-func Create(r io.Reader, w io.Writer) error {
+func Create(r io.Reader) (mapset.Set, error) {
 	list := mapset.NewSet()
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			return err
+			return nil, err
 		}
 		query := formatter.Format(scanner.Text())
 		queryStruct, err := parser.Parse(query)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		list.Add(queryStruct)
 	}
 
-	for q := range list.Iter() {
-		fmt.Fprintln(w, q)
-	}
-
-	return nil
+	return list, nil
 }
