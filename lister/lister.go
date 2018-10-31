@@ -2,8 +2,10 @@ package lister
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/Komei22/sql-mask"
 	"github.com/deckarep/golang-set"
@@ -18,6 +20,8 @@ func Create(r io.Reader, output string) error {
 			return err
 		}
 		query := scanner.Text()
+		fomatedQuery := trimControlChara(query)
+		fmt.Println(fomatedQuery)
 		queryStruct, err := parser.Parse(query)
 		if err != nil {
 			return err
@@ -41,4 +45,11 @@ func save(filepath string, list mapset.Set) error {
 		file.Write(([]byte)(q.(string) + "\n"))
 	}
 	return nil
+}
+
+func trimControlChara(query string) string {
+	query = query[1:strings.LastIndex(query, "\"")]
+	query = strings.Replace(query, "\\n", " ", -1)
+	query = strings.Replace(query, "\\", "", -1)
+	return query
 }

@@ -20,7 +20,6 @@ func newCreateCmd() *cobra.Command {
 				cmd.Help()
 				return nil
 			}
-
 			lister.Create(os.Stdin, output)
 
 			return nil
