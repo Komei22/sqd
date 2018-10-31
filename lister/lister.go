@@ -2,8 +2,8 @@ package lister
 
 import (
 	"bufio"
+	"fmt"
 	"io"
-	"os"
 
 	"github.com/Komei22/sqd/formatter"
 	"github.com/Komei22/sql-mask"
@@ -11,7 +11,7 @@ import (
 )
 
 // Create whitelist
-func Create(r io.Reader, output string) error {
+func Create(r io.Reader, w io.Writer) error {
 	list := mapset.NewSet()
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -26,20 +26,9 @@ func Create(r io.Reader, output string) error {
 		list.Add(queryStruct)
 	}
 
-	return save(output, list)
-}
-
-func save(filepath string, list mapset.Set) error {
-	file, err := os.Create(filepath)
-	if err != nil {
-		return err
+	for q := range list.Iter() {
+		fmt.Fprintln(w, q)
 	}
-	defer file.Close()
 
-	it := list.Iterator()
-
-	for q := range it.C {
-		file.Write(([]byte)(q.(string) + "\n"))
-	}
 	return nil
 }

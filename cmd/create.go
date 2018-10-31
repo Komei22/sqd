@@ -9,8 +9,6 @@ import (
 )
 
 func newCreateCmd() *cobra.Command {
-	var output string
-
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "`sqd create` collect query and create whitelist",
@@ -20,13 +18,11 @@ func newCreateCmd() *cobra.Command {
 				cmd.Help()
 				return nil
 			}
-			lister.Create(os.Stdin, output)
+			lister.Create(os.Stdin, os.Stdout)
 
 			return nil
 		},
 	}
-
-	createCmd.Flags().StringVarP(&output, "output", "o", "whitelist", "output path of whitelist file(default: ./whitelist)")
 
 	return createCmd
 }
