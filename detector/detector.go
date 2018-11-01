@@ -3,7 +3,9 @@ package detector
 import (
 	"bufio"
 	"io"
+	"strings"
 
+	"github.com/Komei22/sqd/formatter"
 	"github.com/Komei22/sqd/matcher"
 	"github.com/Komei22/sql-mask"
 )
@@ -35,6 +37,7 @@ func New(m *matcher.Matcher, mode Mode) *Detector {
 // Detect suspicious query
 func (d *Detector) Detect(query string) (string, error) {
 	q, err := parser.Parse(query)
+	q = formatter.Format(q)
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +54,8 @@ func (d *Detector) DetectFrom(r io.Reader, suspiciousQueryChan chan<- string, er
 		if err := scanner.Err(); err != nil {
 			errChan <- err
 		}
-		query := scanner.Text()
+		in := scanner.Text()
+		query := in[1:strings.LastIndex(in, "\"")]
 		suspiciousQuery, err := d.Detect(query)
 		if err != nil {
 			errChan <- err
