@@ -3,7 +3,6 @@ package lister
 import (
 	"bufio"
 	"io"
-	"strings"
 
 	"github.com/Komei22/sqd/formatter"
 	"github.com/Komei22/sql-mask"
@@ -19,7 +18,10 @@ func Create(r io.Reader) (mapset.Set, error) {
 			return nil, err
 		}
 		in := scanner.Text()
-		query := in[1:strings.LastIndex(in, "\"")]
+		query, err := formatter.ExtractQueryFrom(in)
+		if err != nil {
+			return nil, err
+		}
 		queryStruct, err := parser.Parse(query)
 		queryStruct = formatter.Format(queryStruct)
 		if err != nil {
