@@ -1,6 +1,7 @@
 package formatter
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -16,4 +17,13 @@ func Format(query string) string {
 	query = strings.Replace(query, "\\", "", -1)
 	query = multiSpaceRegexp.ReplaceAllString(query, " ")
 	return query
+}
+
+// ExtractQueryFrom input
+func ExtractQueryFrom(in string) (string, error) {
+	lastIdx := len(in) - 1
+	if string(in[0]) != "\"" || string(in[lastIdx]) != "\"" {
+		return "", fmt.Errorf("Invalid input format: %s", in)
+	}
+	return in[1:lastIdx], nil
 }
