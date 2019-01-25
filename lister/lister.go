@@ -22,8 +22,8 @@ func Create(r io.Reader) (mapset.Set, error) {
 		if err != nil {
 			return nil, err
 		}
+		query = formatter.Format(query)
 		queryStruct, err := parser.Parse(query)
-		queryStruct = formatter.Format(queryStruct)
 		if err != nil {
 			return nil, err
 		}

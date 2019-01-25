@@ -5,12 +5,20 @@ import (
 )
 
 func TestFormat(t *testing.T) {
-	query := `SELECT * FROM         users\nWHERE\n\tname = "test"`
-	expect := `SELECT * FROM users WHERE name = "test"`
+	queries := []string{
+		`SELECT * FROM         users\nWHERE\n\tname = \"test\"`,
+		`SELECT * FROM users WHERE name = \'te\\st\'`}
+	expects := []string{
+		`SELECT * FROM users WHERE name = "test"`,
+		`SELECT * FROM users WHERE name = 'te\st'`}
 
-	formattedQuery := Format(query)
-
-	if formattedQuery != expect {
-		t.Errorf("Unexpected fomatted query: %s", formattedQuery)
+	var formattedQueries []string
+	for _, q := range queries {
+		formattedQueries = append(formattedQueries, Format(q))
+	}
+	for i, fq := range formattedQueries {
+		if fq != expects[i] {
+			t.Errorf("Unexpected fomatted query: %s", fq)
+		}
 	}
 }
