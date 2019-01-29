@@ -35,8 +35,8 @@ func New(m *matcher.Matcher, mode Mode) *Detector {
 
 // Detect suspicious query
 func (d *Detector) Detect(query string) (string, error) {
-	q, err := parser.Parse(query)
-	q = formatter.Format(q)
+	q := formatter.Format(query)
+	q, err := parser.Parse(q)
 	if err != nil {
 		return "", err
 	}
