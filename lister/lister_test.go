@@ -7,9 +7,9 @@ import (
 )
 
 func TestCreateUniqueQuerylist(t *testing.T) {
-	queries := `"SELECT * FROM user WHERE name = "test""
-"SELECT * FROM user WHERE name = "test""
-"SELECT * FROM user"`
+	queries := `SELECT * FROM user WHERE name = "test"
+SELECT * FROM user WHERE name = "test"
+SELECT * FROM user`
 	expectList := mapset.NewSet("SELECT * FROM user WHERE name = ?", "SELECT * FROM user")
 
 	list, _ := Create(strings.NewReader(queries))
