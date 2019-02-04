@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/Komei22/sqd/lister"
@@ -25,7 +26,7 @@ func newCreateCmd() *cobra.Command {
 			}
 
 			for q := range list.Iter() {
-				cmd.Println(q)
+				fmt.Fprintln(os.Stdout, q)
 			}
 			return nil
 		},
