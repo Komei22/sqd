@@ -17,11 +17,7 @@ func Create(r io.Reader) (mapset.Set, error) {
 		if err := scanner.Err(); err != nil {
 			return nil, err
 		}
-		in := scanner.Text()
-		query, err := formatter.ExtractQueryFrom(in)
-		if err != nil {
-			return nil, err
-		}
+		query := scanner.Text()
 		queryStruct, err := parser.Parse(query)
 		queryStruct = formatter.Format(queryStruct)
 		if err != nil {

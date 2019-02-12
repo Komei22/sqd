@@ -11,11 +11,11 @@ func TestDetectSuspiciousQueriesUsingBlacklist(t *testing.T) {
 	blacklist := `DROP DATABASE test
 DROP TABLE article`
 
-	queries := `"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 10"
-"DELETE FROM articles WHERE articles.id = 1"
-" INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'hogehoge', '2018-11-01 09:53:37', '2018-11-01 09:53:37')"
-"DROP DATABASE test"
-"DROP TABLE article"`
+	queries := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 10
+DELETE FROM articles WHERE articles.id =
+INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'hogehoge', '2018-11-01 09:53:37', '2018-11-01 09:53:37')
+DROP DATABASE test
+DROP TABLE article`
 
 	illegalQueries := []string{
 		"DROP DATABASE test",
@@ -53,11 +53,11 @@ func TestDetectSuspiciousQueriesUsingwhitelist(t *testing.T) {
 DELETE FROM articles WHERE articles.id = ?
 INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)`
 
-	queries := `"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 10"
-"DELETE FROM articles WHERE articles.id = 1"
-" INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'hogehoge', '2018-11-01 09:53:37', '2018-11-01 09:53:37')"
-"DROP DATABASE test"
-"DROP TABLE article"`
+	queries := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 10
+DELETE FROM articles WHERE articles.id = 1
+INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'hogehoge', '2018-11-01 09:53:37', '2018-11-01 09:53:37')
+DROP DATABASE test
+DROP TABLE article`
 
 	illegalQueries := []string{
 		"DROP DATABASE test",

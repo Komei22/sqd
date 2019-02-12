@@ -60,7 +60,7 @@ func newRootCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("Can't detection suspicious query: %s", err)
 				}
-				cmd.Println(suspiciousQuery)
+				fmt.Fprintln(os.Stdout, suspiciousQuery)
 			} else {
 				if terminal.IsTerminal(0) {
 					cmd.Help()

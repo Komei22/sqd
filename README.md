@@ -26,9 +26,9 @@ DROP TABLE articles
 
 ```
 $ cat query.log
-"INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'fuga', '2018-11-01 09:53:37', '2018-11-01 09:53:37')"
-"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 30"
-"DELETE FROM articles WHERE articles.id = 1"
+INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'fuga', '2018-11-01 09:53:37', '2018-11-01 09:53:37')
+SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 30
+DELETE FROM articles WHERE articles.id = 1
 
 $ cat query.log | sqd create
 DELETE FROM articles WHERE articles.id = ?
@@ -41,10 +41,10 @@ Query log are written one query in one line such as the following example.
 
 Example of query log
 ```
-"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 1"
-"DELETE FROM\narticles\nWHERE\narticles.id = 1"
-"SELECT * FROM articles"
-"DROP TABLE articles"
+SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 1
+DELETE FROM\narticles\nWHERE\narticles.id = 1
+SELECT * FROM articles
+DROP TABLE articles
 ```
 
 List file are written one structure of query in one line such as the following example.

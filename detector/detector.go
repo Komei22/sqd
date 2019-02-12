@@ -53,11 +53,7 @@ func (d *Detector) DetectFrom(r io.Reader, suspiciousQueryChan chan<- string, er
 		if err := scanner.Err(); err != nil {
 			errChan <- err
 		}
-		in := scanner.Text()
-		query, err := formatter.ExtractQueryFrom(in)
-		if err != nil {
-			errChan <- err
-		}
+		query := scanner.Text()
 		suspiciousQuery, err := d.Detect(query)
 		if err != nil {
 			errChan <- err
