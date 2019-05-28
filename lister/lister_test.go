@@ -1,6 +1,7 @@
 package lister
 
 import (
+	"github.com/Komei22/sql-mask"
 	"github.com/deckarep/golang-set"
 	"strings"
 	"testing"
@@ -12,7 +13,8 @@ SELECT * FROM user WHERE name = "test"
 SELECT * FROM user`
 	expectList := mapset.NewSet("SELECT * FROM user WHERE name = ?", "SELECT * FROM user")
 
-	list, _ := Create(strings.NewReader(queries))
+	m := &masker.MysqlMasker{}
+	list, _ := Create(strings.NewReader(queries), m)
 
 	if !expectList.Equal(list) {
 		t.Errorf("Unexpected list: %s", list)

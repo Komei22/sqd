@@ -5,11 +5,14 @@ import (
 	"os"
 
 	"github.com/Komei22/sqd/lister"
+	"github.com/Komei22/sql-mask"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 func newCreateCmd() *cobra.Command {
+	var database string
+
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "`sqd create` collect query and create whitelist",
@@ -20,7 +23,17 @@ func newCreateCmd() *cobra.Command {
 				return nil
 			}
 
-			list, err := lister.Create(os.Stdin)
+			var m masker.Masker
+			switch database {
+			case "mysql":
+				m = &masker.MysqlMasker{}
+			case "pg":
+				m = &masker.PgMasker{}
+			default:
+				return fmt.Errorf("Please set target database, `mysql` or `pg`")
+			}
+
+			list, err := lister.Create(os.Stdin, m)
 			if err != nil {
 				return err
 			}
@@ -31,6 +44,8 @@ func newCreateCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	createCmd.Flags().StringVarP(&database, "database", "d", "mysql", "target database")
 
 	return createCmd
 }
