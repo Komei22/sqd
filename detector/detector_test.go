@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Komei22/sqd/matcher"
+	"github.com/Komei22/sql-mask"
 )
 
 func TestDetectSuspiciousQueriesUsingBlacklist(t *testing.T) {
@@ -22,10 +23,12 @@ DROP TABLE article`
 		"DROP TABLE article",
 	}
 
+	msk := &masker.MysqlMasker{}
+
 	m := matcher.NewMatcher()
 	m.ReadList(strings.NewReader(blacklist))
 
-	d := New(m, Blacklist)
+	d := New(m, msk, Blacklist)
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
 	defer close(suspiciousQueryChan)
@@ -64,10 +67,12 @@ DROP TABLE article`
 		"DROP TABLE article",
 	}
 
+	msk := &masker.MysqlMasker{}
+
 	m := matcher.NewMatcher()
 	m.ReadList(strings.NewReader(whitelist))
 
-	d := New(m, Whitelist)
+	d := New(m, msk, Whitelist)
 	suspiciousQueryChan := make(chan string)
 	errChan := make(chan error)
 	defer close(suspiciousQueryChan)

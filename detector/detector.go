@@ -23,19 +23,22 @@ const (
 type Detector struct {
 	mode    Mode
 	matcher *matcher.Matcher
+	masker  masker.Masker
 }
 
 // New detector
-func New(m *matcher.Matcher, mode Mode) *Detector {
+func New(m *matcher.Matcher, msk masker.Masker, mode Mode) *Detector {
 	d := &Detector{}
 	d.mode = mode
 	d.matcher = m
+	d.masker = msk
 	return d
 }
 
 // Detect suspicious query
 func (d *Detector) Detect(query string) (string, error) {
-	q, err := parser.Parse(query)
+	// q, err := parser.Parse(query)
+	q, err := masker.Mask(d.masker, query)
 	q = formatter.Format(q)
 	if err != nil {
 		return "", err
