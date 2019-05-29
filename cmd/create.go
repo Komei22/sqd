@@ -29,7 +29,6 @@ func newCreateCmd() *cobra.Command {
 				m = &masker.MysqlMasker{}
 			case "pg":
 				m = &masker.PgMasker{}
-				fmt.Println("pg mode")
 			default:
 				return fmt.Errorf("Please set target database, `mysql` or `pg`")
 			}
