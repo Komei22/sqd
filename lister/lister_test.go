@@ -1,10 +1,11 @@
 package lister
 
 import (
-	"github.com/Komei22/sql-mask"
-	"github.com/deckarep/golang-set"
 	"strings"
 	"testing"
+
+	"github.com/Komei22/sql-mask"
+	"github.com/deckarep/golang-set"
 )
 
 func TestCreateUniqueQuerylist(t *testing.T) {
