@@ -37,7 +37,6 @@ func New(m *matcher.Matcher, msk masker.Masker, mode Mode) *Detector {
 
 // Detect suspicious query
 func (d *Detector) Detect(query string) (string, error) {
-	// q, err := parser.Parse(query)
 	q, err := masker.Mask(d.masker, query)
 	q = formatter.Format(q)
 	if err != nil {
