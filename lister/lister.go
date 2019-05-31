@@ -10,7 +10,7 @@ import (
 )
 
 // Create whitelist
-func Create(r io.Reader) (mapset.Set, error) {
+func Create(r io.Reader, m masker.Masker) (mapset.Set, error) {
 	list := mapset.NewSet()
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -18,7 +18,7 @@ func Create(r io.Reader) (mapset.Set, error) {
 			return nil, err
 		}
 		query := scanner.Text()
-		queryStruct, err := parser.Parse(query)
+		queryStruct, err := masker.Mask(m, query)
 		queryStruct = formatter.Format(queryStruct)
 		if err != nil {
 			return nil, err

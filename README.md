@@ -8,16 +8,23 @@ List file is defined the structure of query.
 The structure of query is the string replaced all literal with place holder token in the query.
 For example, `SELECT * FROM articles WHERE id = 1` convert to `SELECT * FROM articles WHERE id = ?` and define list file.
 sqd check the structure of query and decide suspicious query.
+sqd support MySQL and PostgreSQL query.
+
+## Installation
+
+```
+go get -u github.com/Komei22/sqd
+```
 
 ## Usage
 ### Suspicious query detection
 `sqd` detect suspicious query using list file, blacklist or whitelist.
 
 ```
-$ sqd -q "DROP TABLE articles" -B blacklist
+$ sqd -q "DROP TABLE articles" -B blacklist -d mysql
 DROP TABLE articles
 
-$ sqd -q "DROP TABLE articles" -W whitelist
+$ sqd -q "DROP TABLE articles" -W whitelist -d mysql
 DROP TABLE articles
 ```
 
@@ -30,7 +37,7 @@ INSERT INTO articles (title, content, created_at, updated_at) VALUES ('hoge', 'f
 SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 30
 DELETE FROM articles WHERE articles.id = 1
 
-$ cat query.log | sqd create
+$ cat query.log | sqd create -d mysql
 DELETE FROM articles WHERE articles.id = ?
 INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)
 SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?

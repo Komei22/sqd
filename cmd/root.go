@@ -9,6 +9,7 @@ import (
 	"github.com/Komei22/sqd/detector"
 	"github.com/Komei22/sqd/eventor"
 	"github.com/Komei22/sqd/matcher"
+	"github.com/Komei22/sql-mask"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -20,6 +21,7 @@ func newRootCmd() *cobra.Command {
 		querylog  string
 		blacklist string
 		whitelist string
+		database  string
 	)
 
 	rootCmd := &cobra.Command{
@@ -27,6 +29,16 @@ func newRootCmd() *cobra.Command {
 		Short: "sqd is suspicious query detection tool based on whitelist or blacklist",
 		Long:  `sqd is suspicious query detection tool based on whitelist or blacklist`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			var msk masker.Masker
+			switch database {
+			case "mysql":
+				msk = &masker.MysqlMasker{}
+			case "pg":
+				msk = &masker.PgMasker{}
+			default:
+				return fmt.Errorf("Please set target database, `mysql` or `pg`")
+			}
+
 			var mode detector.Mode
 			var m *matcher.Matcher
 			var err error
@@ -46,7 +58,7 @@ func newRootCmd() *cobra.Command {
 				}
 			}
 
-			d := detector.New(m, mode)
+			d := detector.New(m, msk, mode)
 
 			if querylog != "" {
 				r, err := os.Open(querylog)
@@ -76,6 +88,7 @@ func newRootCmd() *cobra.Command {
 	rootCmd.Flags().StringVarP(&querylog, "file", "f", "", "query log file path")
 	rootCmd.Flags().StringVarP(&whitelist, "Whitelist", "W", "", "whitelist file path")
 	rootCmd.Flags().StringVarP(&blacklist, "Blacklist", "B", "", "blacklist file path")
+	rootCmd.Flags().StringVarP(&database, "database", "d", "mysql", "target database")
 
 	rootCmd.AddCommand(newCreateCmd())
 
