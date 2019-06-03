@@ -14,12 +14,6 @@ func TestMatcher_ReadList(t *testing.T) {
 	queryList := `SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?
 DELETE FROM articles WHERE articles.id = ?
 INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)`
-	// legalQueries := []string{
-	// 	"SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT ?",
-	// 	"DELETE FROM articles WHERE articles.id = ?",
-	// 	"INSERT INTO articles (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)",
-	// }
-	// illegalQuery := `DROP DATABASE production`
 
 	tests := []struct {
 		name    string
