@@ -49,7 +49,7 @@ Query log are written one query in one line such as the following example.
 Example of query log
 ```
 SELECT articles.* FROM articles ORDER BY articles.id DESC LIMIT 1
-DELETE FROM\narticles\nWHERE\narticles.id = 1
+DELETE FROM articles WHERE articles.id = 1
 SELECT * FROM articles
 DROP TABLE articles
 ```
